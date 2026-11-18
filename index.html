@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Danh bạ PH">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-180.png"><link rel="manifest" href="manifest.webmanifest">
+<title>Mở danh bạ phụ huynh</title>
+<style>:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --line: #e5eaf2;
+  --primary: #2563eb;
+  --primary-2: #4f46e5;
+  --primary-soft: #e8efff;
+  --call: #16a34a;
+  --call-soft: #e7f7ed;
+  --sms: #f59e0b;
+  --sms-soft: #fff4de;
+  --zalo: #0068ff;
+  --zalo-soft: #e5f0ff;
+  --danger: #dc2626;
+  --danger-soft: #fdecec;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 4px 16px rgba(15, 23, 42, .06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1220; --card: #131c2e; --text: #e6ebf5; --muted: #94a3b8; --line: #23304a;
+    --primary-soft: #1b2a4d; --call-soft: #12301f; --sms-soft: #3a2c10; --zalo-soft: #10264d; --danger-soft: #3b1515;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--primary); }
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.wide .wrap { max-width: 1080px; }
+
+/* Thanh tiêu đề */
+.topbar {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff; padding: 14px 0 54px; position: relative;
+}
+.topbar .row { display: flex; align-items: center; gap: 12px; }
+.brand-logo {
+  width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.18);
+  display: grid; place-items: center; flex: none;
+}
+.topbar h1 { font-size: 18px; margin: 0; line-height: 1.2; }
+.topbar .sub { font-size: 13px; opacity: .85; }
+.topbar .spacer { flex: 1; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(255,255,255,.16);
+  color: #fff; display: grid; place-items: center; cursor: pointer;
+}
+.icon-btn:active { transform: scale(.96); }
+.hero-stats { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.stat { background: rgba(255,255,255,.14); border-radius: 12px; padding: 8px 12px; font-size: 13px; }
+.stat b { font-size: 18px; display: block; line-height: 1.1; }
+
+/* Ô tìm kiếm nổi */
+.search-shell { margin-top: -34px; position: sticky; top: 8px; z-index: 5; }
+.search {
+  display: flex; align-items: center; gap: 10px; background: var(--card); border-radius: 14px;
+  padding: 0 14px; box-shadow: 0 6px 24px rgba(37, 99, 235, .18); border: 1px solid var(--line);
+}
+.search input { flex: 1; border: 0; outline: 0; background: transparent; padding: 15px 0; font-size: 16px; min-width: 0; }
+.search .clear { border: 0; background: var(--line); width: 26px; height: 26px; border-radius: 50%; cursor: pointer; color: var(--muted); }
+.chips { display: flex; gap: 8px; margin: 12px 0 6px; overflow-x: auto; scrollbar-width: none; }
+.chip {
+  border: 1px solid var(--line); background: var(--card); padding: 7px 14px; border-radius: 999px;
+  font-size: 14px; white-space: nowrap; cursor: pointer;
+}
+.chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.result-info { font-size: 13px; color: var(--muted); margin: 6px 2px 10px; }
+
+/* Thẻ học sinh */
+.list { display: grid; gap: 12px; padding-bottom: 40px; }
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--line); }
+.student { padding: 14px; }
+.student-head { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  font-weight: 700; color: #fff; font-size: 17px;
+}
+.student-name { font-weight: 700; font-size: 17px; }
+.student-meta { font-size: 13px; color: var(--muted); }
+.student-head .spacer { flex: 1; }
+.contacts { margin-top: 12px; display: grid; gap: 8px; }
+.contact {
+  display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: var(--bg);
+}
+.contact .who { flex: 1; min-width: 0; }
+.contact .role { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+.contact .pname { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.contact .phone { font-variant-numeric: tabular-nums; font-size: 15px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.contact .nophone { color: var(--muted); font-style: italic; font-size: 14px; }
+.badge-zalo {
+  font-size: 11px; font-weight: 700; color: var(--zalo); background: var(--zalo-soft);
+  padding: 1px 7px; border-radius: 999px;
+}
+.actions { display: flex; gap: 6px; flex: none; }
+.act {
+  width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; text-decoration: none;
+  border: 0; cursor: pointer;
+}
+.act:active { transform: scale(.94); }
+.act.call { background: var(--call-soft); color: var(--call); }
+.act.sms { background: var(--sms-soft); color: var(--sms); }
+.act.zalo { background: var(--zalo); color: #fff; font-weight: 800; font-size: 12px; letter-spacing: -.02em; }
+.note { margin-top: 8px; font-size: 13px; color: var(--muted); }
+mark { background: #fde68a; color: inherit; border-radius: 3px; padding: 0 1px; }
+
+.empty { text-align: center; padding: 48px 16px; color: var(--muted); }
+.empty svg { opacity: .5; }
+
+/* Đăng nhập */
+.auth {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
+  background: radial-gradient(1200px 600px at 10% -10%, #c7d7ff 0, transparent 60%),
+              radial-gradient(900px 500px at 110% 110%, #d9d2ff 0, transparent 60%), var(--bg);
+}
+@media (prefers-color-scheme: dark) { .auth { background: var(--bg); } }
+.auth-card { width: 100%; max-width: 400px; padding: 28px 22px; }
+.auth-logo {
+  width: 60px; height: 60px; border-radius: 18px; margin: 0 auto 12px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+}
+.auth h1 { text-align: center; font-size: 22px; margin: 0 0 4px; }
+.auth p.lead { text-align: center; color: var(--muted); margin: 0 0 22px; font-size: 14px; }
+
+/* Biểu mẫu */
+label.field { display: block; margin-bottom: 14px; }
+label.field > span { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.input, select.input, textarea.input {
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card);
+  outline: none; font-size: 16px;
+}
+.input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer;
+  padding: 12px 18px; border-radius: 12px; font-weight: 600; background: var(--primary); color: #fff; text-decoration: none;
+}
+.btn.block { width: 100%; }
+.btn.ghost { background: var(--primary-soft); color: var(--primary); }
+.btn.light { background: var(--bg); color: var(--text); border: 1px solid var(--line); }
+.btn.danger { background: var(--danger-soft); color: var(--danger); }
+.btn.sm { padding: 8px 12px; font-size: 14px; border-radius: 10px; }
+.btn:disabled { opacity: .6; cursor: default; }
+.error { background: var(--danger-soft); color: var(--danger); padding: 10px 12px; border-radius: 10px; font-size: 14px; margin-bottom: 14px; }
+.ok-msg { background: var(--call-soft); color: var(--call); padding: 10px 12px; border-radius: 10px; font-size: 14px; margin-bottom: 14px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.check input { width: 18px; height: 18px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+@media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* Menu */
+.menu { color: var(--text); position: absolute; right: 16px; top: 60px; z-index: 20; min-width: 220px; padding: 6px; }
+.menu button { color: var(--text); display: flex; width: 100%; gap: 10px; align-items: center; padding: 11px 12px; border: 0; background: none; border-radius: 10px; cursor: pointer; text-align: left; }
+.menu button:hover { background: var(--bg); }
+.menu .who { padding: 10px 12px; border-bottom: 1px solid var(--line); margin-bottom: 4px; font-size: 14px; }
+
+/* Hộp thoại */
+dialog { border: 0; padding: 0; border-radius: 20px; width: min(560px, calc(100vw - 24px)); background: var(--card); color: var(--text); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+dialog::backdrop { background: rgba(15, 23, 42, .45); }
+.dlg-head { display: flex; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.dlg-head h3 { margin: 0; font-size: 17px; flex: 1; }
+.dlg-body { padding: 18px; max-height: 70vh; overflow: auto; }
+.dlg-foot { padding: 12px 18px 18px; display: flex; gap: 8px; justify-content: flex-end; }
+.x { border: 0; background: var(--bg); width: 34px; height: 34px; border-radius: 10px; cursor: pointer; }
+fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 0; margin: 0 0 14px; }
+legend { font-weight: 700; font-size: 14px; padding: 0 6px; }
+
+/* Quản trị */
+.tabs { display: flex; gap: 6px; margin-top: -40px; overflow-x: auto; scrollbar-width: none; position: relative; z-index: 2; }
+.tab { border: 0; background: rgba(255,255,255,.18); color: #fff; padding: 9px 14px; border-radius: 12px; cursor: pointer; white-space: nowrap; font-weight: 600; font-size: 14px; }
+.tab.on { background: var(--card); color: var(--primary); }
+.panel { margin-top: 16px; padding: 16px; }
+.panel h2 { font-size: 17px; margin: 0 0 12px; }
+.toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.toolbar .spacer { flex: 1; }
+.rows { display: grid; gap: 8px; }
+.row-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; flex-wrap: wrap; }
+.row-item .main { flex: 1; min-width: 180px; }
+.row-item .title { font-weight: 700; }
+.row-item .meta { font-size: 13px; color: var(--muted); }
+.pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+.pill.off { background: var(--danger-soft); color: var(--danger); }
+.pill.warn { background: var(--sms-soft); color: #b45309; }
+.drop { display: block; border: 2px dashed var(--line); border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; }
+.drop.over { border-color: var(--primary); background: var(--primary-soft); }
+.steps { margin: 0 0 14px; padding-left: 20px; color: var(--muted); font-size: 14px; }
+table.log { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.log td, table.log th { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #0f172a; color: #fff;
+  padding: 12px 18px; border-radius: 12px; z-index: 100; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100vw - 32px);
+}
+.footer { text-align: center; font-size: 12px; color: var(--muted); padding: 10px 0 30px; }
+.search input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+</style></head>
+<body><div id="app"></div><dialog id="dlg"></dialog>
+<script>/* Phần dùng chung: hiển thị thẻ học sinh, tìm kiếm không dấu, mã hoá */
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fold = (s) => String(s ?? '').normalize('NFC').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+const fmtPhone = (p) => (p && p.length === 10 ? `${p.slice(0, 4)} ${p.slice(4, 7)} ${p.slice(7)}` : p || '');
+
+const I = {
+  menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+  key: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg>',
+  phone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+  sms: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  users: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
+  lock: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  gear: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h6"/></svg>',
+};
+
+const COLORS = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#059669', '#0891b2', '#4f46e5', '#ca8a04'];
+function avatar(name) {
+  const parts = String(name).trim().split(/\s+/);
+  const initial = (parts[parts.length - 1] || '?')[0].toUpperCase();
+  let h = 0; for (const ch of String(name)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return `<div class="avatar" style="background:${COLORS[h % COLORS.length]}">${esc(initial)}</div>`;
+}
+
+function hl(text, q) {
+  const t = String(text ?? '').normalize('NFC'); if (!q) return esc(t);
+  const ft = fold(t); const fq = fold(q.trim()); const i = fq ? ft.indexOf(fq) : -1;
+  if (i < 0 || ft.length !== t.length) return esc(t);
+  return esc(t.slice(0, i)) + '<mark>' + esc(t.slice(i, i + fq.length)) + '</mark>' + esc(t.slice(i + fq.length));
+}
+
+function contactRow(role, name, phone, zalo, q) {
+  if (!name && !phone) return '';
+  const actions = phone ? `<div class="actions">
+      <a class="act call" href="tel:${esc(phone)}" aria-label="Gọi ${esc(role)}" title="Gọi điện">${I.phone}</a>
+      ${zalo ? `<a class="act zalo" href="https://zalo.me/${esc(phone)}" target="_blank" rel="noopener" aria-label="Nhắn Zalo cho ${esc(role)}" title="Nhắn Zalo">Zalo</a>`
+             : `<a class="act sms" href="sms:${esc(phone)}" aria-label="Nhắn tin SMS cho ${esc(role)}" title="Nhắn tin SMS">${I.sms}</a>`}
+    </div>` : '';
+  const qd = q.replace(/\D/g, '');
+  const phoneHtml = phone
+    ? `<div class="phone">${qd.length >= 3 && phone.includes(qd) ? `<mark>${esc(fmtPhone(phone))}</mark>` : esc(fmtPhone(phone))}
+         ${zalo ? '<span class="badge-zalo">Có Zalo</span>' : ''}
+         ${zalo ? `<a href="sms:${esc(phone)}" class="muted" style="font-size:12px">SMS</a>` : ''}</div>`
+    : '<div class="nophone">Chưa có số điện thoại</div>';
+  return `<div class="contact"><div class="who"><div class="role">${esc(role)}</div>
+    <div class="pname">${hl(name || '—', q)}</div>${phoneHtml}</div>${actions}</div>`;
+}
+
+function studentCard(s, q) {
+  const meta = [s.code, s.dob && `NS ${s.dob}`, s.gender].filter(Boolean).map(esc).join(' · ');
+  return `<article class="card student">
+    <div class="student-head">${avatar(s.full_name)}
+      <div><div class="student-name">${hl(s.full_name, q)}</div><div class="student-meta">${meta}</div></div></div>
+    <div class="contacts">
+      ${contactRow('Cha', s.father_name, s.father_phone, s.father_zalo, q)}
+      ${contactRow('Mẹ', s.mother_name, s.mother_phone, s.mother_zalo, q)}
+      ${contactRow(s.guardian_role || 'Người giám hộ', s.guardian_name, s.guardian_phone, s.guardian_zalo, q)}
+      ${s.student_phone ? contactRow('Học sinh', s.full_name, s.student_phone, s.student_zalo, q) : ''}
+    </div>
+    ${s.note ? `<div class="note">📝 ${esc(s.note)}</div>` : ''}
+  </article>`;
+}
+
+function filterStudents(list, q, filter) {
+  const fq = fold(q.trim()); const dq = q.replace(/\D/g, '');
+  return list.filter((s) => {
+    if (filter === 'zalo' && !(s.father_zalo || s.mother_zalo || s.guardian_zalo)) return false;
+    if (filter === 'missing' && (s.father_phone || s.mother_phone || s.guardian_phone)) return false;
+    if (!fq) return true;
+    if (fold([s.full_name, s.father_name, s.mother_name, s.guardian_name, s.code].join(' | ')).includes(fq)) return true;
+    return dq.length >= 3 && [s.father_phone, s.mother_phone, s.guardian_phone, s.student_phone].some((p) => p && p.includes(dq));
+  });
+}
+
+function mountSearch(container, list) {
+  container.innerHTML = `
+    <div class="search-shell"><div class="search">${I.search}
+      <input id="q" type="search" placeholder="Tìm tên học sinh, phụ huynh hoặc số điện thoại" autocomplete="off" enterkeyhint="search">
+      <button class="clear hidden" id="clr" aria-label="Xoá">✕</button></div></div>
+    <div class="chips" id="chips"><button class="chip on" data-f="all">Tất cả</button>
+      <button class="chip" data-f="zalo">Có Zalo</button><button class="chip" data-f="missing">Chưa có SĐT</button></div>
+    <div class="result-info" id="info"></div><div class="list" id="list"></div>`;
+  const st = { q: '', f: 'all' };
+  const q = container.querySelector('#q'); const clr = container.querySelector('#clr');
+  const draw = () => {
+    const r = filterStudents(list, st.q, st.f);
+    container.querySelector('#info').textContent = st.q || st.f !== 'all' ? `Tìm thấy ${r.length} học sinh` : `Danh sách ${r.length} học sinh (xếp theo tên)`;
+    container.querySelector('#list').innerHTML = r.length ? r.map((s) => studentCard(s, st.q)).join('')
+      : `<div class="empty">${I.search}<div>Không tìm thấy học sinh phù hợp.</div></div>`;
+  };
+  q.oninput = () => { st.q = q.value; clr.classList.toggle('hidden', !q.value); draw(); };
+  clr.onclick = () => { q.value = ''; q.oninput(); q.focus(); };
+  container.querySelector('#chips').onclick = (e) => {
+    const b = e.target.closest('[data-f]'); if (!b) return;
+    st.f = b.dataset.f; container.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c === b)); draw();
+  };
+  draw();
+}
+
+// ---- Mã hoá ----
+// Dữ liệu lớp mã hoá bằng khoá dữ liệu DK (AES-256-GCM). DK sinh từ mật khẩu quản trị + tên lớp,
+// nên quản trị luôn tạo lại / cấp lại mật khẩu được. DK được "bọc" bằng khoá sinh từ mật khẩu GVCN;
+// đổi mật khẩu chỉ cần bọc lại DK, không phải mã hoá lại dữ liệu.
+const ITER = 300000;
+const te = new TextEncoder();
+const b64 = { enc: (u8) => { let s = ''; u8.forEach((b) => { s += String.fromCharCode(b); }); return btoa(s); },
+  dec: (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)) };
+const hex = (u8) => Array.from(u8, (b) => b.toString(16).padStart(2, '0')).join('');
+async function pbkdf2Bits(password, salt, iter = ITER) {
+  const base = await crypto.subtle.importKey('raw', te.encode(String(password).normalize('NFC')), 'PBKDF2', false, ['deriveBits']);
+  return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: iter, hash: 'SHA-256' }, base, 256));
+}
+const aesKey = (raw) => crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
+async function hmacHex(raw, msg, n = 16) {
+  const k = await crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return hex(new Uint8Array(await crypto.subtle.sign('HMAC', k, te.encode(msg)))).slice(0, n);
+}
+async function seal(raw, bytes) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await aesKey(raw), bytes));
+  return { iv: b64.enc(iv), ct: b64.enc(ct) };
+}
+async function open_(raw, box) {
+  return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64.dec(box.iv) }, await aesKey(raw), b64.dec(box.ct)));
+}
+// Khoá dữ liệu của một lớp, sinh từ mật khẩu quản trị
+const classDataKey = (adminPw, cls) => pbkdf2Bits(adminPw, te.encode('llph-dk|' + fold(cls).trim()));
+// Bọc / mở DK bằng mật khẩu GVCN
+async function wrapKey(dk, pw) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  return { salt: b64.enc(salt), ...(await seal(await pbkdf2Bits(pw, salt), dk)) };
+}
+async function unwrapKey(w, pw) { return open_(await pbkdf2Bits(pw, b64.dec(w.salt)), w); }
+// Mã "phiên bản mật khẩu": đổi khi quản trị cấp mật khẩu mới (không lộ mật khẩu vì cần DK để tính)
+const resetVersion = (dk, pw) => hmacHex(dk, 'rv|' + String(pw).normalize('NFC'));
+const classFileId = async (dk) => 'llph-' + (await hmacHex(dk, 'id', 12));
+async function encryptData(dk, obj) { return seal(dk, te.encode(JSON.stringify(obj))); }
+async function decryptData(dk, box) { return JSON.parse(new TextDecoder().decode(await open_(dk, box))); }
+
+/* File tra cứu của một lớp: dữ liệu được mã hoá, cần mật khẩu để mở */
+// Giữ lại mã nguồn gốc của file (trước khi hiển thị dữ liệu) để tạo bản sao khi đổi mật khẩu
+let ORIGINAL_HTML; let PAYLOAD_TEXT; let P; let K_PW; let K_OV; let LOCK_EXTRA = null;
+const $app = document.getElementById('app');
+const $dlg = document.getElementById('dlg');
+const ls = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return localStorage.getItem(k) === v; } catch { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch { /* bỏ qua */ } },
+};
+let DK = null;
+
+// Mật khẩu đã đổi trên máy này được lưu dạng "khoá bọc" (không lưu mật khẩu).
+// Nếu quản trị đã cấp mật khẩu mới (rv khác) thì bỏ bản đổi cũ.
+function activeWrap() {
+  try {
+    const ov = JSON.parse(ls.get(K_OV) || 'null');
+    if (ov && ov.rv === P.rv && ov.w) return ov.w;
+    if (ov) ls.del(K_OV);
+  } catch { ls.del(K_OV); }
+  return P.w;
+}
+
+function renderLock(msg) {
+  $app.innerHTML = `<div class="auth"><form class="card auth-card" id="f">
+    <div class="auth-logo">${I.lock}</div>
+    <h1>Lớp ${esc(P.cls)}</h1>
+    <p class="lead">Danh bạ phụ huynh${P.teacher ? ` · GVCN ${esc(P.teacher)}` : ''}</p>
+    ${msg ? `<div class="error">${esc(msg)}</div>` : ''}
+    <label class="field"><span>Mật khẩu</span>
+      <input class="input" name="pw" type="password" autocomplete="current-password" required autofocus></label>
+    <label class="check" style="margin-bottom:16px"><input type="checkbox" name="remember"> Ghi nhớ trên điện thoại này (chỉ máy riêng)</label>
+    <button class="btn block">Mở danh bạ</button>
+    <p class="muted" style="font-size:13px;text-align:center;margin:16px 0 0">Quên mật khẩu? Liên hệ quản trị để được cấp lại.<br>Thông tin cá nhân của phụ huynh – không chia sẻ file và mật khẩu.</p>
+    ${LOCK_EXTRA ? LOCK_EXTRA.html : ''}
+  </form></div>`;
+  if (LOCK_EXTRA) LOCK_EXTRA.bind();
+  const f = document.getElementById('f');
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = f.querySelector('button'); btn.disabled = true; btn.textContent = 'Đang mở…';
+    if (!(await unlock(f.pw.value, f.remember.checked))) renderLock('Mật khẩu không đúng.');
+  };
+}
+
+async function unlock(pw, remember) {
+  if (!window.crypto || !crypto.subtle) {
+    renderLock('Trình duyệt này không hỗ trợ giải mã. Hãy mở file bằng Chrome, hoặc dùng đường link https do nhà trường gửi.');
+    return true;
+  }
+  try {
+    DK = await unwrapKey(activeWrap(), pw);
+    const data = await decryptData(DK, P.d);
+    if (remember) ls.set(K_PW, pw);
+    renderList(data);
+    return true;
+  } catch { ls.del(K_PW); DK = null; return false; }
+}
+
+function lock() { DK = null; ls.del(K_PW); renderLock(); }
+
+function renderList(data) {
+  const list = data.students;
+  const nZalo = list.reduce((n, s) => n + s.father_zalo + s.mother_zalo + s.guardian_zalo, 0);
+  const nMissing = list.filter((s) => !s.father_phone && !s.mother_phone && !s.guardian_phone).length;
+  $app.innerHTML = `<div class="topbar"><div class="wrap"><div class="row"><div class="brand-logo">${I.users}</div>
+    <div><h1>Lớp ${esc(P.cls)}</h1><div class="sub">${P.teacher ? `GVCN: ${esc(P.teacher)} · ` : ''}Cập nhật ${esc(P.updated)}</div></div>
+    <div class="spacer"></div><button class="icon-btn" id="menuBtn" aria-label="Menu">${I.menu}</button></div>
+    <div class="hero-stats"><div class="stat"><b>${list.length}</b>học sinh</div><div class="stat"><b>${nZalo}</b>số phụ huynh có Zalo</div>
+    ${nMissing ? `<div class="stat"><b>${nMissing}</b>chưa có SĐT</div>` : ''}</div></div></div>
+    <div class="wrap"><div id="body"></div><div class="footer">Thông tin cá nhân của phụ huynh – không chia sẻ.</div></div>`;
+  mountSearch(document.getElementById('body'), list);
+  document.getElementById('menuBtn').onclick = (e) => {
+    e.stopPropagation();
+    let m = document.getElementById('menu'); if (m) { m.remove(); return; }
+    m = document.createElement('div'); m.id = 'menu'; m.className = 'card menu';
+    m.innerHTML = `<div class="who"><b>${esc(P.teacher || 'GVCN')}</b><br><span class="muted">Lớp ${esc(P.cls)}</span></div>
+      <button data-m="pw">${I.key} Đổi mật khẩu</button><button data-m="lock">${I.lock} Khoá danh bạ</button>`;
+    document.querySelector('.topbar').appendChild(m);
+    m.onclick = (ev) => {
+      const a = ev.target.closest('[data-m]')?.dataset.m; if (!a) return; m.remove();
+      if (a === 'pw') changePassword();
+      if (a === 'lock') lock();
+    };
+    setTimeout(() => document.addEventListener('click', () => m.remove(), { once: true }));
+  };
+}
+
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+
+function changePassword() {
+  $dlg.innerHTML = `<form id="pf">
+    <div class="dlg-head"><h3>Đổi mật khẩu</h3><button type="button" class="x" data-close aria-label="Đóng">✕</button></div>
+    <div class="dlg-body"><div id="pe" class="error hidden"></div>
+      <label class="field"><span>Mật khẩu hiện tại</span><input class="input" name="cur" type="password" autocomplete="current-password" required></label>
+      <label class="field"><span>Mật khẩu mới (ít nhất 8 ký tự)</span><input class="input" name="nw" type="password" minlength="8" autocomplete="new-password" required></label>
+      <label class="field"><span>Nhập lại mật khẩu mới</span><input class="input" name="nw2" type="password" minlength="8" autocomplete="new-password" required></label>
+    </div>
+    <div class="dlg-foot"><button type="button" class="btn light" data-close>Huỷ</button><button class="btn">Đổi mật khẩu</button></div></form>`;
+  $dlg.querySelectorAll('[data-close]').forEach((b) => { b.onclick = () => $dlg.close(); });
+  const f = document.getElementById('pf'); const err = f.querySelector('#pe');
+  const fail = (m) => { err.textContent = m; err.classList.remove('hidden'); f.querySelector('.btn:not(.light)').disabled = false; };
+  f.onsubmit = async (e) => {
+    e.preventDefault(); f.querySelector('.btn:not(.light)').disabled = true;
+    if (f.nw.value.length < 8) return fail('Mật khẩu mới cần ít nhất 8 ký tự.');
+    if (f.nw.value !== f.nw2.value) return fail('Hai lần nhập mật khẩu mới không khớp.');
+    if (f.nw.value === f.cur.value) return fail('Mật khẩu mới phải khác mật khẩu hiện tại.');
+    try { await unwrapKey(activeWrap(), f.cur.value); } catch { return fail('Mật khẩu hiện tại không đúng.'); }
+    const w = await wrapKey(DK, f.nw.value);
+    const saved = ls.set(K_OV, JSON.stringify({ rv: P.rv, w }));
+    if (ls.get(K_PW)) ls.set(K_PW, f.nw.value);
+    const newPayload = JSON.stringify({ ...P, w }).replace(/</g, '\\u003c');
+    const html = ORIGINAL_HTML.replace(PAYLOAD_TEXT, () => newPayload);
+    $dlg.innerHTML = `<div class="dlg-head"><h3>Đã đổi mật khẩu</h3><button class="x" data-close aria-label="Đóng">✕</button></div>
+      <div class="dlg-body">
+        ${saved ? '<div class="ok-msg">Từ nay mở danh bạ trên máy này bằng mật khẩu mới.</div>'
+          : '<div class="error">Máy này không lưu được thay đổi. Hãy tải file mới bên dưới và dùng file đó thay cho file cũ.</div>'}
+        <p>Nếu bạn mở danh bạ trên <b>máy khác</b>, hãy tải file mới (đã gắn mật khẩu mới) và dùng file đó; xoá file cũ đi.</p>
+        <p class="muted" style="font-size:13px">Lưu ý: file cũ còn ở nơi khác vẫn mở được bằng mật khẩu cũ.</p>
+      </div>
+      <div class="dlg-foot"><button class="btn light" data-close>Đóng</button><button class="btn" id="dlNew">Tải file mới</button></div>`;
+    $dlg.querySelectorAll('[data-close]').forEach((b) => { b.onclick = () => $dlg.close(); });
+    document.getElementById('dlNew').onclick = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+      a.download = `lop-${fold(P.cls).replace(/[^a-z0-9]+/g, '-')}.html`;
+      document.body.appendChild(a); a.click(); a.remove();
+    };
+  };
+  $dlg.showModal();
+}
+
+// o.text: nội dung JSON của dữ liệu lớp; o.html: mã nguồn file lớp (để tạo file mới khi đổi mật khẩu)
+function startViewer(o) {
+  ORIGINAL_HTML = o.html; PAYLOAD_TEXT = o.text; P = JSON.parse(o.text);
+  K_PW = P.id + '-pw'; K_OV = P.id + '-key'; LOCK_EXTRA = o.lockExtra || null; DK = null;
+  (async () => {
+    const saved = ls.get(K_PW);
+    if (!(saved && await unlock(saved, true))) renderLock();
+  })();
+}
+
+/* Trang "Mở danh bạ" dùng chung (cho iPhone): chọn file lớp từ ứng dụng Tệp, giải mã ngay trên máy.
+   Trang này không chứa dữ liệu; file lớp được lưu lại trong trình duyệt của máy này. */
+const K_FILE = 'llph-shell-file';
+
+function payloadFromFile(text) {
+  const doc = new DOMParser().parseFromString(text, 'text/html');
+  const el = doc.getElementById('payload');
+  if (!el) throw new Error('Đây không phải file danh bạ lớp (lop-xxx.html).');
+  const t = el.textContent; const p = JSON.parse(t);
+  if (p.v !== 2 || !p.d || !p.w) throw new Error('File danh bạ này là bản cũ. Hãy xin quản trị file mới.');
+  return t;
+}
+
+const switchFile = {
+  html: '<button type="button" class="btn light block" id="swf" style="margin-top:12px">Chọn file danh bạ khác</button>',
+  bind() { document.getElementById('swf').onclick = () => renderPick(); },
+};
+
+function openFileText(text, save) {
+  const payload = payloadFromFile(text);
+  if (save) ls.set(K_FILE, text);
+  startViewer({ html: text, text: payload, lockExtra: switchFile });
+}
+
+function renderPick(msg) {
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const standalone = window.navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  $app.innerHTML = `<div class="auth"><div class="card auth-card">
+    <div class="auth-logo">${I.users}</div>
+    <h1>Mở danh bạ phụ huynh</h1>
+    <p class="lead">Chọn file danh bạ lớp do nhà trường gửi (ví dụ <b>lop-10a9.html</b>)</p>
+    ${msg ? `<div class="error">${esc(msg)}</div>` : ''}
+    <label class="btn block" style="cursor:pointer">📂 Chọn file danh bạ<input type="file" id="pick" hidden></label>
+    <ol class="steps" style="margin-top:16px">
+      <li>Nhận file qua Zalo / Google Drive → chọn <b>Lưu vào Tệp</b> (Save to Files).</li>
+      <li>Bấm <b>Chọn file danh bạ</b> ở trên → tìm file trong Tệp hoặc Google Drive.</li>
+      <li>Nhập mật khẩu. Lần sau chỉ cần mở trang này và nhập mật khẩu.</li>
+      ${isIOS && !standalone ? '<li>Nên bấm nút <b>Chia sẻ</b> (ô vuông có mũi tên lên) của Safari → <b>Thêm vào MH chính</b> để có biểu tượng như ứng dụng.</li>' : ''}
+    </ol>
+    <p class="muted" style="font-size:13px;text-align:center;margin:8px 0 0">Dữ liệu được giải mã ngay trên máy này, không gửi lên mạng.</p>
+  </div></div>`;
+  document.getElementById('pick').onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { openFileText(await f.text(), true); } catch (err) { renderPick(err.message || 'Không đọc được file.'); }
+  };
+}
+
+(() => {
+  const saved = ls.get(K_FILE);
+  if (saved) { try { openFileText(saved, false); return; } catch { ls.del(K_FILE); } }
+  renderPick();
+})();
+</script></body></html>
